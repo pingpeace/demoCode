@@ -1,0 +1,43 @@
+@keyframes moveCard {
+    from {
+        right: 0;
+    }
+
+    to {
+        right: 200px;
+    }
+}
+
+/* .card:hover {
+    transform: translate(100px, 100px) rotate(45deg);
+    transition-property: font-size;
+    transition-duration: 4s;
+    transition-delay: 2s;
+    font-size: 36px;
+} */
+
+.card {
+    margin: 20px;
+    width: 100px;
+    height: 100px;
+    border: 1px solid;
+    background-color: gray;
+    transition: transform 1s;
+}
+
+@keyframes fade-out {
+    from {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translate(100px, 100px);
+    }
+}
+
+.fade-out-div {
+    animation: fade-out 1s ease-in-out;
+    background-color: '#000000';
+}
