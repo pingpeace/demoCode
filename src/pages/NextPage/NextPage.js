@@ -1,69 +1,90 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Paper } from '@mui/material';
+import { TextField, Menu, MenuItem } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 
 import './NextPage.css';
 
-const NextPage = () => {
-    const navigator = useNavigate();
-    const [selectedOption, setSelectedOption] = useState('');
-    const [displayText, setDisplayText] = useState('');
-    const [openPaper, setOpenPaper] = useState(false)
+const CustomMenuItem = styled(MenuItem)(({ theme, selected }) => ({
+    backgroundColor: selected ? theme.palette.action.selected : 'inherit',
+    color: selected ? theme.palette.primary.main : 'inherit',
+    '&.Mui-selected': {
+        backgroundColor: theme.palette.action.selected,
+        color: theme.palette.primary.main,
+    },
+    '&.Mui-selected:hover': {
+        backgroundColor: theme.palette.action.selected,
+        color: theme.palette.primary.main,
+    },
+}));
 
-    const handleSelectChange = (event) => {
-        const value = event.target.value;
-        setSelectedOption(value);
-        setDisplayText('');
-        setTimeout(() => {
-            setOpenPaper(false)
-        }, 500)
-    };
+const DropdownTextField = () => {
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [selectedOption, setSelectedOption] = useState('');
+    const [displayedText, setDisplayedText] = useState('');
+    const [currentCharIndex, setCurrentCharIndex] = useState(0);
+    const navigator = useNavigate();
+
+    const options = ['選項一', '選項二', '選項三', '選項四'];
 
     useEffect(() => {
-        if (selectedOption) {
-            let currentIndex = 0;
-            const interval = setInterval(() => {
-                setDisplayText((prevText) => prevText + selectedOption[currentIndex]);
-                currentIndex++;
-                if (currentIndex === selectedOption.length) {
-                    clearInterval(interval);
-                }
-            }, 1000); // 調整這個值以改變字母顯示速度
-
-            return () => clearInterval(interval);
+        let interval;
+        if (selectedOption && currentCharIndex < selectedOption.length) {
+            interval = setInterval(() => {
+                setDisplayedText((prev) => prev + selectedOption[currentCharIndex]);
+                setCurrentCharIndex((prev) => prev + 1);
+            }, 500); // 每個字母出現的間隔時間
         }
-    }, [selectedOption]);
+        return () => clearInterval(interval);
+    }, [selectedOption, currentCharIndex]);
 
-    function handleClick() {
-        setOpenPaper(true)
-    }
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleMenuItemClick = (option) => {
+        setSelectedOption(option);
+        setDisplayedText('');
+        setCurrentCharIndex(0);
+
+        setTimeout(() => {
+            handleClose();
+        }, 1000)
+    };
 
     return (
-        <div className="text-box-dropdown-container">
+        <div>
             <TextField
-                id="outlined-basic"
-                label="Enter text"
+                className='textfield'
+                value={displayedText}
+                onClick={handleClick}
                 variant="outlined"
                 fullWidth
-                onClick={() => handleClick()}
-                value={displayText}
+                placeholder="請選擇一個選項"
             />
-            {openPaper && <Paper sx={{ width: '200px'}}>
-                <div className="options-container">
-                    {['Option 1', 'Option 2', 'Option 3', 'Option 4'].map((option, index) => (
-                        <div
-                            key={index}
-                            className={`option ${selectedOption === option ? 'selected-option' : ''}`}
-                            onClick={() => handleSelectChange({ target: { value: option } })}
-                        >
-                            {option}
-                        </div>
-                    ))}
-                </div>
-            </Paper>}
-            <button className='button' onClick={() => navigator('/')}>Return Home</button>
+            <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                {options.map((option, index) => (
+                    <CustomMenuItem
+                        key={index}
+                        selected={option === selectedOption}
+                        onClick={() => handleMenuItemClick(option)}
+                    >
+                        {option}
+                    </CustomMenuItem>
+                ))}
+            </Menu>
+
+            <button onClick={() => navigator('/')}>Return Home</button>
         </div>
     );
 };
 
-export default NextPage;
+export default DropdownTextField;

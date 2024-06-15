@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-color: white;
+    background-color: black;
   }
   
   .select-form {
@@ -34,3 +34,8 @@
   .button {
     margin-top: 20px;
   }
+
+  .textfield {
+    background-color: white;
+    color: green;
+}
